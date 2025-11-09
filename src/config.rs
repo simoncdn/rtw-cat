@@ -7,14 +7,12 @@ pub struct Config {
 
 impl Config {
     fn new(file_path: String) -> Config {
-        Config {
-            file_path: file_path,
-        }
+        Config { file_path }
     }
 
     pub fn get_input_config() -> Config {
         let args: Vec<String> = env::args().collect();
-        
+
         Config::build(&args).unwrap_or_else(|err| {
             eprintln!("Error: {}", err);
             process::exit(1)
@@ -45,10 +43,7 @@ mod tests {
 
     #[test]
     fn test_build() {
-        let args = vec![
-            String::from("program"),
-            String::from("file.txt")
-        ];
+        let args = vec![String::from("program"), String::from("file.txt")];
 
         let config = Config::build(&args).unwrap();
 

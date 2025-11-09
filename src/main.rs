@@ -1,3 +1,7 @@
+use rtw_cat::{config, run};
+
 fn main() {
-    println!("Hello world")
+    let config = config::Config::get_input_config();
+    println!("{}", config.file_path);
+    run();
 }

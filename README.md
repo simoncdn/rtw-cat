@@ -24,33 +24,60 @@
 This implementation demonstrates important systems programming concepts:
 
 - **File descriptors**: Using `File::open()` to get a handle without loading data
-- **Buffered I/O**: `BufReader` for efficient chunk-based reading (~8 KB buffer)
-- **Streaming**: `io::copy()` for constant memory usage regardless of file size
-- **Error handling**: Proper `Result` types and error propagation
+- **Buffered I/O**: `BufReader` for efficient line-by-line reading
+- **Streaming**: Line-by-line processing for constant memory usage regardless of file size
+- **Performance optimization**: `stdout.lock()` to avoid repeated locking overhead
+- **Error handling**: Proper `Result` types and error propagation with `?` operator
+- **CLI parsing**: Using `clap` with derive macros for robust argument handling
 
 ## Usage
 
 ### Basic usage
 ```bash
-cargo run <file_path>
+# Display file content
+cargo run -- <file_path>
+
+# Display file with line numbers
+cargo run -- --number <file_path>
+cargo run -- -n <file_path>
 ```
 
-Example:
+Examples:
 ```bash
-cargo run example.txt
+# View file
+cargo run -- example.txt
+
+# View file with line numbers
+cargo run -- -n example.txt
+cargo run -- --number example.txt
 ```
 
 ### With cargo build
 ```bash
+# Build the release version
 cargo build --release
+
+# Run directly
 ./target/release/rtw-cat example.txt
+./target/release/rtw-cat -n example.txt
 ```
+
+### Help
+```bash
+cargo run -- --help
+./target/release/rtw-cat --help
+```
+
+## Features
+
+- **Basic display**: Display file contents to stdout
+- **Line numbering** (`-n`, `--number`): Display line numbers with proper alignment (like `cat -n`)
 
 ## Code Structure
 
 - `src/main.rs`: Application entry point and error handling
-- `src/lib.rs`: Core streaming logic with buffered I/O
-- `src/config.rs`: Configuration and command-line argument parsing
+- `src/lib.rs`: Core streaming logic with line-by-line processing
+- `src/cli.rs`: CLI argument definition using `clap` derive macros
 
 ## Tests
 

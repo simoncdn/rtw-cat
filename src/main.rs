@@ -1,11 +1,11 @@
 use std::process;
 
-use rtw_cat::{config, run};
+use clap::Parser;
+use rtw_cat::{run, cli};
 
 fn main() {
-    let config = config::Config::get_input_config();
-
-    if let Err(e) = run(config) {
+    let cli = cli::Cli::parse();
+    if let Err(e) = run(cli) {
         eprintln!("Error: {}", e);
         process::exit(1)
     };

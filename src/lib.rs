@@ -1,15 +1,48 @@
-pub mod config;
+pub mod cli;
 
-use std::{error::Error, fs, io::{self, BufReader}};
+use cli::Cli;
+use std::{
+    error::Error,
+    fs,
+    io::{self, BufRead, BufReader, StdoutLock, Write},
+};
 
-use config::Config;
+pub fn run(cli: Cli) -> Result<(), Box<dyn Error>> {
+    let file = fs::File::open(cli.file_path)?;
 
-pub fn run(config: Config) -> Result<(), Box<dyn Error>> {
-    let file = fs::File::open(config.file_path)?;
-    let mut reader = BufReader::new(file);
-    let mut stdout = io::stdout();
+    let reader = BufReader::new(file);
+    let stdout = io::stdout();
+    let mut handle = stdout.lock();
 
-    io::copy(&mut reader, &mut stdout)?;
+    if cli.show_line_numbers {
+        show_line_with_number(reader, &mut handle)?;
+    } else {
+        show_line(reader, &mut handle)?;
+    }
+
+    Ok(())
+}
+
+fn show_line_with_number(
+    reader: BufReader<fs::File>,
+    handle: &mut StdoutLock,
+) -> Result<(), Box<dyn Error>> {
+    for (index, line) in reader.lines().enumerate() {
+        let line = line?;
+        writeln!(handle, "{:6}\t{}", index + 1, line)?
+    }
+
+    Ok(())
+}
+
+fn show_line(
+    reader: BufReader<fs::File>,
+    handle: &mut StdoutLock,
+) -> Result<(), Box<dyn Error>> {
+    for line in reader.lines() {
+        let line = line?;
+        writeln!(handle, "{}", line)?
+    }
 
     Ok(())
 }

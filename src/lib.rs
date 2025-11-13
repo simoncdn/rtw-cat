@@ -8,13 +8,21 @@ use std::{
 };
 
 pub fn run(cli: Cli) -> Result<(), Box<dyn Error>> {
-    let file = fs::File::open(cli.file_path)?;
+    for file in cli.files {
+        print_file(&file, cli.show_line_numbers)?
+    }
+
+    Ok(())
+}
+
+fn print_file(file_path: &str, is_show_line_numbers: bool) -> Result<(), Box<dyn Error>> {
+    let file = fs::File::open(file_path)?;
 
     let reader = BufReader::new(file);
     let stdout = io::stdout();
     let mut handle = stdout.lock();
 
-    if cli.show_line_numbers {
+    if is_show_line_numbers {
         show_line_with_number(reader, &mut handle)?;
     } else {
         show_line(reader, &mut handle)?;
@@ -35,10 +43,7 @@ fn show_line_with_number(
     Ok(())
 }
 
-fn show_line(
-    reader: BufReader<fs::File>,
-    handle: &mut StdoutLock,
-) -> Result<(), Box<dyn Error>> {
+fn show_line(reader: BufReader<fs::File>, handle: &mut StdoutLock) -> Result<(), Box<dyn Error>> {
     for line in reader.lines() {
         let line = line?;
         writeln!(handle, "{}", line)?

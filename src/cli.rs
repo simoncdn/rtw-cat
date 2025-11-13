@@ -6,7 +6,7 @@ use clap::Parser;
 #[command(about = "A cat clone written in Rust")]
 pub struct Cli {
     /// The file to display
-    pub file_path: String,
+    pub files: Vec<String>,
 
     /// Show line numbers
     #[arg(short = 'n', long = "number")]
